@@ -1,15 +1,17 @@
 import Details from "@/components/modules/event-details/Details";
-import EventVanue from "@/components/modules/event-details/EventVanue";
+import EventVenue from "@/components/modules/event-details/EventVenue";
 import HeroSection from "@/components/modules/event-details/HeroSection";
+import { getEventById } from "@/db/queries";
 
-export default function EventDetailPage() {
+export default async function EventDetailPage({ params: { id } }) {
+	const eventInfo = await getEventById(id);
 	return (
 		<>
-			<HeroSection />
-			<section className="container">
-				<div className="grid grid-cols-5 gap-12 my-12">
-					<Details />
-					<EventVanue />
+			<HeroSection eventInfo={eventInfo} />
+			<section class="container">
+				<div class="grid grid-cols-5 gap-12 my-12">
+					<Details details={eventInfo?.details} swags={eventInfo?.swags} />
+					<EventVenue location={eventInfo?.location} />
 				</div>
 			</section>
 		</>

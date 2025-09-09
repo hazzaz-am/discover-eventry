@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import Navbar from "@/components/layouts/Navbar";
+import { dbConnect } from "@/services/mongoose";
 
 const geistSans = localFont({
 	src: "./fonts/GeistVF.woff",
@@ -18,7 +19,9 @@ export const metadata = {
 	description: "Discover events across the world!",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+	// mongodb connection
+	await dbConnect();
 	return (
 		<html lang="en">
 			<body
