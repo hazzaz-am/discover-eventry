@@ -1,27 +1,35 @@
 import ActionButtons from "@/components/ActionButtons";
-import event1 from "@/public/google-io-2023-1.png";
+import EventSchemaScript from "@/components/meta/EventSchemaScript";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function EventCard() {
+export default function EventCard({ event }) {
 	return (
 		<div className="overflow-hidden rounded-md bg-[#242526]">
-			<Image src={event1} alt="Event 1" className="w-full" />
+			<EventSchemaScript event={event}/>
+			<Image
+				src={event?.imageUrl}
+				alt={event?.name}
+				className="w-full"
+				width={500}
+				height={500}
+			/>
 
 			<div className="p-3">
-				<Link href="/details/1" className="font-bold text-lg">
-					Google I/O Extended
+				<Link href={`/details/${event?.id}`} className="font-bold text-lg">
+					{event?.name}
 				</Link>
-				<p className="text-[#9C9C9C] text-sm mt-1">
-					Rangpur, Dhaka, Bangladesh, Rangpur, Bangladesh
-				</p>
+				<p className="text-[#9C9C9C] text-sm mt-1">{event?.location}</p>
 				<div className="text-[#737373] text-sm mt-1">
-					<span>1k Interested</span>
-					<span>|</span>
-					<span>40K Going</span>
+					<span>{event?.interested_ids?.length} Interested</span>
+					<span className="mx-1">|</span>
+					<span>{event?.going_ids?.length} Going</span>
 				</div>
-
-				<ActionButtons fromDetails={false} />
+				<ActionButtons
+					eventId={event.id}
+					interested_ids={event.interested_ids}
+					going_ids={event?.going_ids}
+				/>
 			</div>
 		</div>
 	);
