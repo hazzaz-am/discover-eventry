@@ -1,10 +1,12 @@
 import ActionButtons from "@/components/ActionButtons";
+import EventSchemaScript from "@/components/meta/EventSchemaScript";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function EventCard({ event }) {
 	return (
 		<div className="overflow-hidden rounded-md bg-[#242526]">
+			<EventSchemaScript event={event}/>
 			<Image
 				src={event?.imageUrl}
 				alt={event?.name}
@@ -23,7 +25,11 @@ export default function EventCard({ event }) {
 					<span className="mx-1">|</span>
 					<span>{event?.going_ids?.length} Going</span>
 				</div>
-				<ActionButtons />
+				<ActionButtons
+					eventId={event.id}
+					interested_ids={event.interested_ids}
+					going_ids={event?.going_ids}
+				/>
 			</div>
 		</div>
 	);

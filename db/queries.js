@@ -4,6 +4,7 @@ import {
 	replaceMongoIdInArray,
 	replaceMongoIdInObject,
 } from "@/utils/data-util";
+import mongoose from "mongoose";
 
 /**
  * The function `getAllEvents` retrieves all events from the database and replaces the MongoDB IDs with
@@ -11,8 +12,14 @@ import {
  * @returns The `getAllEvents` function is returning all events from the database after converting them
  * to plain JavaScript objects and replacing the MongoDB `_id` with a standard `id` field.
  */
-export async function getAllEvents() {
-	const allEvents = await EventModel.find().lean();
+export async function getAllEvents(query) {
+	let allEvents = [];
+	if (query) {
+		const regex = new RegExp(query, "i");
+		allEvents = await EventModel.find({ name: { $regex: regex } }).lean();
+	} else {
+		allEvents = await EventModel.find().lean();
+	}
 	return replaceMongoIdInArray(allEvents);
 }
 
@@ -39,6 +46,18 @@ export async function createUser(data) {
 	await UserModel.create(data);
 }
 
+/**
+ * The function `findUserByCredentials` searches for a user in the database based on the provided
+ * credentials and returns the user object with the MongoDB ID replaced.
+ * @param credentials - The `credentials` parameter likely contains the information needed to find a
+ * user in the database, such as username and password. This information is used to query the
+ * `UserModel` to find a matching user. If a user is found, the function `replaceMongoIdInObject` is
+ * called to replace
+ * @returns If a user is found in the database based on the provided credentials, the function will
+ * return the user object after replacing the MongoDB ID with a more user-friendly representation. If
+ * no user is found, the function will return `null`.
+ */
+
 export async function findUserByCredentials(credentials) {
 	const user = await UserModel.findOne(credentials).lean();
 
@@ -46,4 +65,28 @@ export async function findUserByCredentials(credentials) {
 		return replaceMongoIdInObject(user);
 	}
 	return null;
+}
+
+export async function updateInterest(eventId, authId) {
+	const event = await EventModel.findById(eventId);
+
+	if (event) {
+		const findUser = event.interested_ids.find(
+			(id) => id.toString() === authId
+		);
+
+		if (findUser) {
+			event.interested_ids.pull(authId);
+		} else {
+			event.interested_ids.push(authId);
+		}
+	}
+
+	event.save();
+}
+
+export async function updateGoing(eventId, authId) {
+	const event = await EventModel.findById(eventId);
+	event.going_ids.push(authId);
+	event.save();
 }
